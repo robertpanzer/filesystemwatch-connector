@@ -1,6 +1,5 @@
 dependencies {
     testRuntime "org.apache.openejb:arquillian-tomee-embedded:1.6.0"
-
 }
 
 test {

@@ -17,6 +17,7 @@
 package foo.test;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
@@ -36,6 +37,8 @@ import javax.transaction.xa.XAResource;
 @Connector
 public class FSWatcherResourceAdapter implements ResourceAdapter {
 
+	FileSystem fileSystem;
+
 	WatchService watchService;
 	
 	Map<WatchKey, MessageEndpointFactory> listeners = new ConcurrentHashMap<>();
@@ -49,7 +52,7 @@ public class FSWatcherResourceAdapter implements ResourceAdapter {
 		FSWatcherActivationSpec fsWatcherAS = (FSWatcherActivationSpec) activationSpec;
 		
 		try {
-			WatchKey watchKey = FileSystems.getDefault().getPath(fsWatcherAS.getDir()).register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+			WatchKey watchKey = fileSystem.getPath(fsWatcherAS.getDir()).register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 			listeners.put(watchKey, endpointFactory);
 
 			// On TomEE the endpoint class is available via activationSpec.getBeanClass() 
@@ -64,7 +67,13 @@ public class FSWatcherResourceAdapter implements ResourceAdapter {
 
 	@Override
 	public void endpointDeactivation(MessageEndpointFactory endpointFactory, ActivationSpec activationSpec) {
-
+		for (WatchKey watchKey: listeners.keySet()) {
+			if (listeners.get(watchKey) == endpointFactory) {
+				listeners.remove(watchKey);
+				break;
+			}
+		}
+		endpointFactoryToBeanClass.remove(endpointFactory);
 	}
 
 	@Override
@@ -77,7 +86,8 @@ public class FSWatcherResourceAdapter implements ResourceAdapter {
 		this.bootstrapContext = bootstrapContext;
 		
 		try {
-			watchService = FileSystems.getDefault().newWatchService();
+			fileSystem = FileSystems.getDefault();
+			watchService = fileSystem.newWatchService();
 		} catch (IOException e) {
 			throw new ResourceAdapterInternalException(e);
 		}

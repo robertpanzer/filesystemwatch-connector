@@ -1,0 +1,23 @@
+= filesystemwatch-connector
+
+A demo resource adapter demoing the new EJB 3.2 empty listener interface MDBs.
+
+== Build
+
+The project contains build resources for gradle. 
+
+To test the project on TomEE run:
+
+----
+gradle test -Pprofile=tomee
+----
+
+Make sure to use a Java 7 SDK.
+
+To test the project on Wildfly run:
+
+----
+export JBOSS_HOME=.../wildfly-8.0.0.Final
+gradle test -Pprofile=wildfly
+----
+

@@ -2,16 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 repositories {
-    //mavenCentral()
-    mavenLocal()
-    /*
-    maven  {
-        url "http://repository.jboss.org/nexus/content/groups/public/"
-    }
-    */
-    maven {
-        url "http://baswrh24:8081/artifactory/repo"
-    }
+    mavenCentral()
 }
 
 
@@ -22,6 +13,9 @@ dependencies {
     testCompile "org.jboss.arquillian.junit:arquillian-junit-container:1.1.4.Final"
 }
 
+test {
+  testLogging.showStandardStreams = true
+}
 
 if (!hasProperty('profile')) {
     ext.profile = "tomee"

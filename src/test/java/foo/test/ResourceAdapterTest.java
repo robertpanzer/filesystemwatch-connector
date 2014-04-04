@@ -64,10 +64,15 @@ public class ResourceAdapterTest {
 				.addAsManifestResource("jboss-ejb3.xml")
 				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
 		
-		return ShrinkWrap.create(EnterpriseArchive.class, "testcase.ear")
+		JavaArchive libjar = ShrinkWrap.create(JavaArchive.class, "lib.jar")
+				.addClasses(ResourceAdapterTest.class)
+				.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+
+		return ShrinkWrap.create(EnterpriseArchive.class, "test.ear")
 				.addAsModules(
 						rar,
-						ejbjar);
+						ejbjar)
+				.addAsLibraries(libjar);
 
 	}
 
@@ -78,10 +83,11 @@ public class ResourceAdapterTest {
 	private static int mode;
 	
 	@Before
-	public void init() {
+	public void init() throws Exception {
 		newFile = null;
 		mode = 0;
 		barrier = new CyclicBarrier(2);
+		Thread.sleep(1000);
 	}
 	
 	@Test
@@ -90,8 +96,8 @@ public class ResourceAdapterTest {
 		
 		File tempFile = new File(".", "testFile.txt");
 		assertTrue("Could not create temp file", tempFile.createNewFile());
-		
-		barrier.await(5, TimeUnit.SECONDS);
+
+		barrier.await(10, TimeUnit.SECONDS);
 		
 		assertEquals(tempFile.getName(), newFile.getName());
 		assertEquals(FileEvent.CREATE, mode);
@@ -105,7 +111,7 @@ public class ResourceAdapterTest {
 		assertTrue("Could not create temp file", tempFile.createNewFile());
 		tempFile.deleteOnExit();
 		
-		barrier.await(5, TimeUnit.SECONDS);
+		barrier.await(10, TimeUnit.SECONDS);
 		
 		assertEquals(tempFile.getName(), newFile.getName());
 		assertEquals(FileEvent.CREATE, mode);
@@ -118,7 +124,7 @@ public class ResourceAdapterTest {
 		File tempFile = new File(".", "testFile.txt");
 		assertTrue("Could not delete test file", tempFile.delete());
 		
-		barrier.await(5, TimeUnit.SECONDS);
+		barrier.await(10, TimeUnit.SECONDS);
 		
 		assertEquals(tempFile.getName(), newFile.getName());
 		assertEquals(FileEvent.DELETE, mode);

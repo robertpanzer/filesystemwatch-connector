@@ -1,3 +1,9 @@
+repositories {
+    maven {
+	url 'http://repository.jboss.org/nexus/content/groups/public'
+   }
+}
+
 dependencies {
     testRuntime "org.wildfly:wildfly-arquillian-container-managed:8.0.0.Final"
 

@@ -1,0 +1,9 @@
+dependencies {
+    testRuntime "org.wildfly:wildfly-arquillian-container-managed:8.0.0.Final"
+
+    testRuntime "org.jboss.arquillian.protocol:arquillian-protocol-servlet:1.1.4.Final"
+}
+
+test {
+	systemProperty 'arquillian.launch', 'wildfly'
+}

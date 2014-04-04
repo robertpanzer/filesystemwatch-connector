@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.jboss.org/schema/arquillian http://www.jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+	<engine>
+		<property name="deploymentExportPath">deployments</property>
+	</engine>
+
+	<container qualifier="wildfly">
+		<configuration>
+			<property name="jbossHome">${env.JBOSS_HOME}</property>
+			<property name="javaVmArguments">
+    		-Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n 
+			 -Xmx512m -XX:MaxPermSize=256m 
+			 -Djava.net.preferIPv4Stack=true 
+			 </property>
+			<property name="serverConfig">${jboss.server.config.file.name:standalone-full.xml}</property>
+			<property name="allowConnectingToRunningServer">true</property>
+		</configuration>
+		<protocol type="Servlet 3.0" />
+	</container>
+
+     <container qualifier="websphere">
+            <configuration>
+	           <property name="remoteServerAddress">localhost</property>
+	           <property name="remoteServerSoapPort">8880</property>
+	           <property name="securityEnabled">false</property>
+	           <property name="username">admin</property>
+            </configuration>
+        </container>
+
+</arquillian>
